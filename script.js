@@ -1,13 +1,37 @@
 
 var options = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "None",
-  "1 & 4",
-  "2 & 3",
-  "None",
+  {
+    label: "1",
+    funnels: [1],
+  },
+  {
+    label: "2",
+    funnels: [2],
+  },
+  {
+    label: "3",
+    funnels: [3],
+  },
+  {
+    label: "4",
+    funnels: [4],
+  },
+  {
+    label: "None",
+    funnels: [],
+  },
+  {
+    label: "1 & 4",
+    funnels: [1, 4],
+  },
+  {
+    label: "2 & 3",
+    funnels: [2, 3],
+  },
+  {
+    label: "None",
+    funnels: [],
+  },
 ];
 
 var startAngle = 0;
@@ -49,7 +73,7 @@ function drawRouletteWheel() {
   if (canvas.getContext) {
     var outsideRadius = 200;
     var textRadius = 160;
-    var insideRadius = 125;
+    var insideRadius = 100;
 
     ctx = canvas.getContext("2d");
     ctx.clearRect(0,0,500,500);
@@ -57,7 +81,7 @@ function drawRouletteWheel() {
     ctx.strokeStyle = "#ccc";
     ctx.lineWidth = 2;
 
-    ctx.font = 'bold 12px Helvetica, Arial';
+    ctx.font = 'bold 22px Helvetica, Arial';
 
     for(var i = 0; i < options.length; i++) {
       var angle = startAngle + i * arc;
@@ -74,12 +98,12 @@ function drawRouletteWheel() {
       ctx.shadowOffsetX = -1;
       ctx.shadowOffsetY = -1;
       ctx.shadowBlur    = 3;
-      ctx.shadowColor   = "rgb(0,0,0)";
+      ctx.shadowColor   = "rgba(0,0,0, 0.3)";
       ctx.fillStyle = "white";
       ctx.translate(250 + Math.cos(angle + arc / 2) * textRadius,
                     250 + Math.sin(angle + arc / 2) * textRadius);
       ctx.rotate(angle + arc / 2 + Math.PI / 2);
-      var text = options[i];
+      var text = options[i].label;
       ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
       ctx.restore();
     }
@@ -124,16 +148,26 @@ function stopRotateWheel() {
   var arcd = arc * 180 / Math.PI;
   var index = Math.floor((360 - degrees % 360) / arcd);
   ctx.save();
-  ctx.font = 'bold 30px Helvetica, Arial';
-  var text = options[index]
+  ctx.font = 'bold 35px Helvetica, Arial';
+  var text = options[index].label
   ctx.fillText(text, 250 - ctx.measureText(text).width / 2, 250 + 10);
   ctx.restore();
+  sendResult(options[index].funnels)
 }
 
 function easeOut(t, b, c, d) {
   var ts = (t/=d)*t;
   var tc = ts*t;
   return b+c*(tc + -3*ts + 3*t);
+}
+
+function sendResult (funnels) {
+  if (!funnels || funnels.length === 0) return console.log('no funnels open')
+  console.log('sending request to open funnels:', funnels)
+  var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+  xmlhttp.open("POST", "/server_endpoint");
+  xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xmlhttp.send(JSON.stringify({ funnels: funnels }));
 }
 
 drawRouletteWheel();
