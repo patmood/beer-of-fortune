@@ -7,9 +7,10 @@ def root():
 
 @app.route('/funnels', methods=['POST'])
 def funnels():
+    # TODO (dan): Funnel opening script here
     content = request.get_json()
-    print content
-    return content
+    print content['funnels']
+    return str(content['funnels'])
 
 @app.route('/<path:path>')
 def static_proxy(path):
