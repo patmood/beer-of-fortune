@@ -165,7 +165,7 @@ function sendResult (funnels) {
   if (!funnels || funnels.length === 0) return console.log('no funnels open')
   console.log('sending request to open funnels:', funnels)
   var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-  xmlhttp.open("POST", "/server_endpoint");
+  xmlhttp.open("POST", "/funnels");
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.send(JSON.stringify({ funnels: funnels }));
 }
